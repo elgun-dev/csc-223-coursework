@@ -1,0 +1,52 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------< edu.csc223:generic-task-sequence >------------------
+[INFO] Building generic-task-sequence 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ generic-task-sequence ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ generic-task-sequence ---
+[INFO] skip non existing resourceDirectory C:\Users\shelg\Documents\Codex\2026-09-19\you\outputs\csc-223-coursework\assignments\1.9-generic-task-sequence\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ generic-task-sequence ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] 
+[INFO] --- kotlin:2.2.21:compile (compile) @ generic-task-sequence ---
+[INFO] starting the daemon as: C:\Users\shelg\Documents\Codex\2026-09-19\you\work\tools\jdk17\jdk-17.0.20.1+1\bin\java -cp C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-build-tools-impl\2.2.21\kotlin-build-tools-impl-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-build-tools-api\2.2.21\kotlin-build-tools-api-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-stdlib\2.2.21\kotlin-stdlib-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\annotations\13.0\annotations-13.0.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-compiler-embeddable\2.2.21\kotlin-compiler-embeddable-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-script-runtime\2.2.21\kotlin-script-runtime-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-reflect\1.6.10\kotlin-reflect-1.6.10.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-daemon-embeddable\2.2.21\kotlin-daemon-embeddable-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlinx\kotlinx-coroutines-core-jvm\1.8.0\kotlinx-coroutines-core-jvm-1.8.0.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-compiler-runner\2.2.21\kotlin-compiler-runner-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-daemon-client\2.2.21\kotlin-daemon-client-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-compiler-embeddable\2.2.21\kotlin-scripting-compiler-embeddable-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-common\2.2.21\kotlin-scripting-common-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-jvm\2.2.21\kotlin-scripting-jvm-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-compiler-impl-embeddable\2.2.21\kotlin-scripting-compiler-impl-embeddable-2.2.21.jar -Djava.awt.headless=true -Djava.rmi.server.hostname=127.0.0.1 -Xmx7968m -XX:ReservedCodeCacheSize=320m -ea -XX:+UseCodeCacheFlushing -XX:+UseParallelGC -Dkotlin.daemon.initiator.marker.file=C:\Users\shelg\AppData\Local\Temp\kotlin-compiler-client-8896520013179993641-is-running --add-exports java.base/sun.nio.ch=ALL-UNNAMED org.jetbrains.kotlin.daemon.KotlinCompileDaemon --daemon-runFilesPath C:\Users\shelg\AppData\Local\kotlin\daemon --daemon-autoshutdownIdleSeconds=7200 --daemon-shutdownDelayMilliseconds=1800000 --daemon-compilerClasspath C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-build-tools-impl\2.2.21\kotlin-build-tools-impl-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-build-tools-api\2.2.21\kotlin-build-tools-api-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-stdlib\2.2.21\kotlin-stdlib-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\annotations\13.0\annotations-13.0.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-compiler-embeddable\2.2.21\kotlin-compiler-embeddable-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-script-runtime\2.2.21\kotlin-script-runtime-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-reflect\1.6.10\kotlin-reflect-1.6.10.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-daemon-embeddable\2.2.21\kotlin-daemon-embeddable-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlinx\kotlinx-coroutines-core-jvm\1.8.0\kotlinx-coroutines-core-jvm-1.8.0.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-compiler-runner\2.2.21\kotlin-compiler-runner-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-daemon-client\2.2.21\kotlin-daemon-client-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-compiler-embeddable\2.2.21\kotlin-scripting-compiler-embeddable-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-common\2.2.21\kotlin-scripting-common-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-jvm\2.2.21\kotlin-scripting-jvm-2.2.21.jar;C:\Users\shelg\Documents\Codex\2026-09-19\you\work\m2\org\jetbrains\kotlin\kotlin-scripting-compiler-impl-embeddable\2.2.21\kotlin-scripting-compiler-impl-embeddable-2.2.21.jar
+[INFO] #1 retrying connecting to the daemon 
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ generic-task-sequence ---
+[INFO] skip non existing resourceDirectory C:\Users\shelg\Documents\Codex\2026-09-19\you\outputs\csc-223-coursework\assignments\1.9-generic-task-sequence\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ generic-task-sequence ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] 
+[INFO] --- kotlin:2.2.21:test-compile (test-compile) @ generic-task-sequence ---
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ generic-task-sequence ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running edu.csc223.tasks.ProjectTaskPriorityComparatorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in edu.csc223.tasks.ProjectTaskPriorityComparatorTest
+[INFO] Running edu.csc223.tasks.ProjectTaskTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in edu.csc223.tasks.ProjectTaskTest
+[INFO] Running edu.csc223.tasks.ResizableTaskSequenceTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in edu.csc223.tasks.ResizableTaskSequenceTest
+[INFO] Running edu.csc223.tasks.SequenceSearchTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in edu.csc223.tasks.SequenceSearchTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  14.813 s
+[INFO] Finished at: 2026-09-19T17:51:05-04:00
+[INFO] ------------------------------------------------------------------------

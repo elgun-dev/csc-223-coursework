@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: edu.csc223.tasks.ProjectTaskPriorityComparatorTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in edu.csc223.tasks.ProjectTaskPriorityComparatorTest

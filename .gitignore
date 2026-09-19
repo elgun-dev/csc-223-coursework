@@ -1,0 +1,16 @@
+.idea/
+.vscode/
+.gradle/
+build/
+target/
+out/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.iml
+.env
+.env.*
+!.env.example
+Thumbs.db
+.DS_Store
+work/
