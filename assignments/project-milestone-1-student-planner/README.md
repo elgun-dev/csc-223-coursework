@@ -2,7 +2,7 @@
 
 CSC 223 Progressive Software Development Project, Milestone 1
 
-Author: Elgun
+Author: Elgun S
 
 ## Purpose and users
 
