@@ -1,0 +1,12 @@
+Repository: https://github.com/elgun-dev/csc-223-coursework
+Project: https://github.com/elgun-dev/csc-223-coursework/tree/main/assignments/project-milestone-1-student-planner
+Branch: main
+History: https://github.com/elgun-dev/csc-223-coursework/commits/main/assignments/project-milestone-1-student-planner
+
+Three development stages:
+1. Define student planner proposal and bounded project scope
+2. Add Java 17 executable starter and source and test structure
+3. Document ten milestone plan and verified starter execution
+
+Instructor access to this private repository remains unverified.
+Confirm the course-required JDK and repository rules before submitting.

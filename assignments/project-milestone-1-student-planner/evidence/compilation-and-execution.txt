@@ -1,0 +1,15 @@
+Verification date: 2026-09-19 18:57:00 -04:00
+javac 17.0.20.1
+openjdk version "17.0.20.1" 2026-08-18
+OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
+OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)
+Command: javac --release 17 -d target/classes src/main/java/edu/csc223/planner/StudentAssignmentPlanner.java
+Compilation exit code: 0
+Command: java -cp target/classes edu.csc223.planner.StudentAssignmentPlanner
+Project: Student Assignment Planner
+Status: Initial project structure created successfully.
+Current Stage: Milestone 1 - Project Foundation
+Execution exit code: 0
+Full console output matches all three expected lines.
+run.ps1 also compiled and ran successfully with matching output.
+Milestone 1 verification passed. No domain test suite is claimed.
