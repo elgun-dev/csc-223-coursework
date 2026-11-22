@@ -45,7 +45,7 @@ Layout:
   benchmark/src/edu/csc223/planner comparison-only utility sources
   benchmark/raw                  final measurement CSV files
   benchmark/figures              charts matching the report
-  docs                           traceability, architecture, decisions, limitations
+  docs                           release notes (technical report upload pending)
   evidence                       tests, validation, demo, audit, source manifest
   lib                            JUnit standalone test dependency
   VERSION, verify.ps1             release marker and clean build/run procedure
@@ -65,6 +65,8 @@ Repository reference: https://github.com/elgun-dev/csc-223-coursework
 Project path: assignments/project-milestone-1-student-planner
 Final release branch: final-release-v1.0.0
 The branch preserves the existing repository history and integrates the current
-software. Main is unchanged. Earlier milestones were developed locally; this
+software. Main is being brought forward to the same release. Earlier milestones were developed locally; this
 does not fabricate missing progressive remote commits. Instructor access to the
 private repository remains unverified.
+
+The final technical report submitted through Canvas contains the requirements traceability, architecture, design decisions, complexity analysis, testing discussion, and limitations. Its upload to this repository is pending; do not assume these are separate files already present under docs.
