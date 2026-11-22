@@ -1,0 +1,9 @@
+--help: observed exit 0, expected 0
+--legacy: observed exit 0, expected 0
+--search: observed exit 0, expected 0
+--index: observed exit 0, expected 0
+--tree: observed exit 0, expected 0
+--priority: observed exit 0, expected 0
+--graph: observed exit 0, expected 0
+--unknown: observed exit 2, expected 2
+--graph bad 7: observed exit 2, expected 2
