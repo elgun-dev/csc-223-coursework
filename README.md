@@ -15,7 +15,7 @@ The final project includes the integrated application, automated tests, build in
 
 Tested software commit: `0a07d3063b8b2bba31b644620d6afb820cfb9c95`. Final branch: `final-release-v1.0.0`. Later navigation/documentation commits do not change the tested source.
 
-The technical report was submitted separately through Canvas; its repository upload is pending. The repository is private, so the instructor must have access. The final presentation and technical defense are separate course deliverables.
+The [final technical report](assignments/project-milestone-1-student-planner/docs/final-report.txt) is available here and was also submitted through Canvas. The repository is private, so the instructor must have access. The final presentation and technical defense are separate course deliverables.
 
 ## Earlier coursework
 
