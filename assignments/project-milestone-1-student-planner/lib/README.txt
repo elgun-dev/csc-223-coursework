@@ -1,0 +1,1 @@
+JUnit Platform Console Standalone 1.11.4 is downloaded by verify.ps1 if missing and checked against SHA-256 B016EF6B1C3454D6D7C2C88CE081DABF289699686AF6622D6E4E2E1B54B4A2FC. The JAR is not tracked in the final branch; license notices are included in META-INF of the official artifact.

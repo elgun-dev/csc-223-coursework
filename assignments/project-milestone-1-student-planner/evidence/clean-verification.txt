@@ -1,0 +1,51 @@
+
+Thanks for using JUnit! Support its development at https://junit.org/sponsoring
+
+
+Test run finished after 190 ms
+[        13 containers found      ]
+[         0 containers skipped    ]
+[        13 containers started    ]
+[         0 containers aborted    ]
+[        13 containers successful ]
+[         0 containers failed     ]
+[       184 tests found           ]
+[         0 tests skipped         ]
+[       184 tests started         ]
+[         0 tests aborted         ]
+[       184 tests successful      ]
+[         0 tests failed          ]
+
+Version=v1.0.0
+Before=Integrity[valid=true, issues=[]]
+After controlled hash removal=Integrity[valid=false, issues=[INDEX_MISMATCH]]
+After rebuild=Integrity[valid=true, issues=[]]
+Restored ID 2=Implement planner
+Preserved path=[1, 2, 3]
+Recommendation=4
+v1.0.0
+Student Assignment Planner v1.0.0
+Insertion order=[1, 2, 3, 4]
+Title search planner=[2, 3]
+Title order=[1, 2, 4, 3]
+Hash ID 2=Implement planner; binary ID 2=2
+BST range 2..3=[2, 3]
+Course 223
+  Module 10 assignments=[1, 2, 3, 4]
+  Module 11 assignments=[]
+Course 208
+BFS=[1, 2, 3]; DFS=[1, 2, 3]; path=[1, 2, 3]
+Blockers of 3=[2, 1]; isolated path=[]
+Rejected cycle: Self, duplicate, or cycle-forming dependency
+Rejected blocked FIFO: Only pending assignments may enter
+Recommended=4
+FIFO starts=1
+Unblocked recommendation=2
+Priority starts=2
+Next priority starts=3
+FIFO starts=4
+Empty recommendation=Optional.empty; empty FIFO=StartResult[started=Optional.empty, discarded=0]
+Removed 3; pending=ScanResult[pendingCount=0, examinedCount=3]; validation=Integrity[valid=true, issues=[]]
+WARNING: Final field allParameters in class org.junit.platform.console.options.MainCommand has been mutated reflectively by class org.junit.platform.console.shadow.picocli.CommandLine$Model$FieldBinding in unnamed module @2d6d8735 (file:/C:/Users/shelg/.codex/.chatgpt-projects/g-p-6a8f1543a504819187a9a5707e6e490c/csc223_final/fresh-final-release-v3/lib/junit-platform-console-standalone-1.11.4.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled

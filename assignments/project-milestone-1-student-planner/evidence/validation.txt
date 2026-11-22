@@ -1,0 +1,7 @@
+Version=v1.0.0
+Before=Integrity[valid=true, issues=[]]
+After controlled hash removal=Integrity[valid=false, issues=[INDEX_MISMATCH]]
+After rebuild=Integrity[valid=true, issues=[]]
+Restored ID 2=Implement planner
+Preserved path=[1, 2, 3]
+Recommendation=4

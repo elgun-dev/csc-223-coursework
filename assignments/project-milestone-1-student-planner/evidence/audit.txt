@@ -1,0 +1,6 @@
+Final v1.0.0 audit
+46 Java files; 184 named @Test methods; no compiled class files in release folder.
+Fresh copy started without JUnit JAR or class files, downloaded/checksummed the pinned dependency, compiled, passed all tests, ran validation and demo.
+Nine CLI smoke invocations produced expected exit codes.
+No private-key block or common GitHub/OpenAI secret pattern found in text files; application uses fictional fixtures. This pattern scan is not a security proof.
+No instructor feedback or private-repository permission under the instructor account was available.

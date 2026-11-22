@@ -1,7 +1,5 @@
-target/
-out/
-.idea/
-*.iml
+build/
+lib/*.jar
 *.class
-*.log
-.env
+.idea/
+.vscode/

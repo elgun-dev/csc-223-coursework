@@ -1,0 +1,2 @@
+v1.0.0 — 2026-11-22
+Promoted the tested rc1 design; added derived ID-index reconstruction and six final audit tests, including controlled corruption detection and repair. Version assertion updated to final marker. Comparison utilities moved to benchmark/src. All earlier behavior tests retained. No new user features or dependency policies introduced.

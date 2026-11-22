@@ -1,0 +1,22 @@
+Student Assignment Planner v1.0.0
+Insertion order=[1, 2, 3, 4]
+Title search planner=[2, 3]
+Title order=[1, 2, 4, 3]
+Hash ID 2=Implement planner; binary ID 2=2
+BST range 2..3=[2, 3]
+Course 223
+  Module 10 assignments=[1, 2, 3, 4]
+  Module 11 assignments=[]
+Course 208
+BFS=[1, 2, 3]; DFS=[1, 2, 3]; path=[1, 2, 3]
+Blockers of 3=[2, 1]; isolated path=[]
+Rejected cycle: Self, duplicate, or cycle-forming dependency
+Rejected blocked FIFO: Only pending assignments may enter
+Recommended=4
+FIFO starts=1
+Unblocked recommendation=2
+Priority starts=2
+Next priority starts=3
+FIFO starts=4
+Empty recommendation=Optional.empty; empty FIFO=StartResult[started=Optional.empty, discarded=0]
+Removed 3; pending=ScanResult[pendingCount=0, examinedCount=3]; validation=Integrity[valid=true, issues=[]]

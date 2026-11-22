@@ -1,63 +1,70 @@
 # Student Assignment Planner
 
-CSC 223 Progressive Software Development Project, Milestone 1
+Elgun Shiralizade | CSC 223 | Final local release v1.0.0 | 2026-11-22
 
-Author: Elgun S
+Purpose: a local console demonstration and Java API for one student's fictional
+courses, modules, assignments, priorities, and prerequisites. The default scenario
+is integrated; the interface is not an interactive task editor.
 
-## Purpose and users
+Features: validated records and guarded deletion; title/ID search; course/status
+filters; due/priority/title ordering; prerequisite-aware FIFO and recommendations;
+course/module hierarchy; ID ranges; BFS/DFS/paths; blockers; invariant validation;
+explicit reconstruction of derived ID indexes.
 
-A proposed local console application for college students who need to organize assignments across courses, identify upcoming work, and understand prerequisite tasks. It will store fictional course, assignment, and dependency records for development and demonstration.
+Prerequisites: Windows PowerShell and a JDK supporting --release 17. Execution
+was verified on Java 27, not a Java 17 VM. Put java and javac on PATH. JUnit Platform Console Standalone 1.11.4 is test-only. A local copy may be in lib;
+if missing, verify.ps1 downloads the pinned artifact from Maven Central and checks
+its SHA-256 digest before execution. First-time remote setup therefore needs
+internet access. License notices are inside the JAR. Application execution needs
+no account, database, network, external input data, or IDE.
 
-## Current status
+From this directory:
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\verify.ps1
+Optional: pass -JavaBin with your installed JDK bin directory if not on PATH.
+The script compiles src and benchmark/src, runs all 184 tests, runs controlled
+corruption/recovery evidence, prints the version, and runs the integrated demo.
+An unexpected nonzero process exit fails verification. Bypass applies only to
+the launched PowerShell process; the script does not change system policy.
 
-Milestone 1 foundation only. The proposal is awaiting instructor approval. The initial Java entry point prints the project title and status; assignment management and later data structures are planned rather than implemented.
+Run after compilation:
+    java -cp build/classes edu.csc223.planner.StudentAssignmentPlanner
+    java -cp build/classes edu.csc223.planner.StudentAssignmentPlanner --help
 
-## Environment
+Reproduce the two final performance investigations:
+    java -Xms128m -Xmx512m -cp build/classes edu.csc223.planner.ReleaseBenchmark > benchmark/raw/heap-new.csv
+    java -cp build/classes edu.csc223.planner.GraphExperiment benchmark/raw/graph-new
 
-Java 17 is the project compatibility target. Verification uses the workspace JDK 17; the supplied milestone does not identify a specific required JDK release, so confirm the instructor's version before submission. This is a Java project that may later include Kotlin/JVM if approved; Milestone 1 uses Java source files as requested by the assignment.
+The graph command creates graph-new/graph.csv, preserving the submitted evidence.
+Both experiments generate deterministic fictional data and verify results.
+The heap comparison includes setup outside timing and five trials per condition;
+graph results are operation counts, not timings.
 
-## Repository and access
+Layout:
+  src/main/java/edu/csc223/planner  domain, services, structures, demos
+  src/test/java/edu/csc223/planner  full suite and test-only validation executable
+  benchmark/src/edu/csc223/planner comparison-only utility sources
+  benchmark/raw                  final measurement CSV files
+  benchmark/figures              charts matching the report
+  docs                           traceability, architecture, decisions, limitations
+  evidence                       tests, validation, demo, audit, source manifest
+  lib                            JUnit standalone test dependency
+  VERSION, verify.ps1             release marker and clean build/run procedure
 
-Repository: https://github.com/elgun-dev/csc-223-coursework
+The main entry point defaults to the strict ReleasePlanner workflow. Historical
+--legacy, --search, --index, --tree, --priority, and --graph modes are intentionally
+retained component diagnostics. Their advisory graph/manual-arrival scheduling
+contracts differ from the release workflow; --help identifies that boundary.
 
-Branch: main
+Known limitations: in-memory, single-threaded; no persistence or interactive editor;
+unbalanced ID tree; incoming dependency scans; full recommendation rebuild per
+query; historical manual history is unbounded. Resource exhaustion and concurrent
+mutation are not transactional. A repeated version marker does not certify
+instructor approval or remote repository publication.
 
-Project folder: assignments/project-milestone-1-student-planner
-
-Visibility: private. Instructor access has not been verified. The course-specific naming and access instructions must be confirmed before submission. Keep this project separate from Assignment 1.9.
-
-## Project structure
-
-- src/main/java/edu/csc223/planner: executable Java entry point.
-- src/test/java/edu/csc223/planner: reserved test location and testing plan.
-- docs: proposal, scope, development plan, and milestone report.
-- evidence: actual compilation and execution results.
-- pom.xml: Java 17 Maven project for IntelliJ import.
-- run.ps1: compile and run the starter from PowerShell.
-
-## Compile and run
-
-Open this folder as a project in IntelliJ and load pom.xml when prompted. Select JDK 17 as the project SDK and run StudentAssignmentPlanner.main.
-
-For a command-line run, put a JDK on PATH, open PowerShell in this project folder, and run ./run.ps1. The script invokes javac with --release 17, stops if compilation fails, and then starts the application. It can also use the JDK named by JAVA_HOME.
-
-Manual commands from this directory:
-
-    javac --release 17 -d target/classes src/main/java/edu/csc223/planner/StudentAssignmentPlanner.java
-    java -cp target/classes edu.csc223.planner.StudentAssignmentPlanner
-
-Expected output:
-
-    Project: Student Assignment Planner
-    Status: Initial project structure created successfully.
-    Current Stage: Milestone 1 - Project Foundation
-
-Maven users can run mvn compile, followed by the java command above. Maven is optional for this dependency-free starter. The direct javac/java path is the verified execution path recorded in evidence.
-
-## Next milestones and limitations
-
-See docs/milestone-plan.md and docs/milestone-1-report.md. No advanced feature is implemented before topic approval. There are no domain tests yet because no domain behavior exists; the entry point is verified through compilation, exit codes, and its complete console output.
-
-## AI assistance
-
-An AI assistant helped choose the topic and generated the proposal, development plan, Java starter, documentation, and verification commands, then executed the verification. The student must review the work and follow the instructor's assignment-specific AI requirements. This disclosure does not assert independent authorship or personal mastery.
+Repository reference: https://github.com/elgun-dev/csc-223-coursework
+Project path: assignments/project-milestone-1-student-planner
+Final release branch: final-release-v1.0.0
+The branch preserves the existing repository history and integrates the current
+software. Main is unchanged. Earlier milestones were developed locally; this
+does not fabricate missing progressive remote commits. Instructor access to the
+private repository remains unverified.
