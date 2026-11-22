@@ -1,0 +1,467 @@
+Student Assignment Planner Final Technical Report
+
+Elgun Shiralizade
+CSC 223 Data Structures and Analysis of Algorithms
+Final version v1.0.0
+Prepared November 22, 2026
+Assignment due December 14 at 11:59 p.m. | 175 points
+
+A current integrated release, requirements audit, architecture review, algorithm analysis, test evidence, and performance evaluation.
+
+Contents
+
+1. Executive summary
+
+2. Problem scope and operational profile
+
+3. Requirements and traceability
+
+4. Architecture and object oriented design
+
+5. Structures algorithms and contracts
+
+6. Complexity analysis
+
+7. Performance evidence and optimization
+
+8. Testing validation and quality
+
+9. Final release and reproducibility
+
+10. Evaluation limitations and future work
+
+11. Technical learning and conclusion
+
+12. References and evidence index
+
+
+
+1 Executive summary
+
+Student Assignment Planner is a local Java console demonstration and reusable API for organizing fictional courses, modules, assignments, and prerequisites. It addresses a common planning problem: a due-date list alone cannot show whether work is ready to start. The final workflow combines record management, search and ordered views, a prerequisite-aware FIFO study queue, a course/module hierarchy, deterministic priority recommendations, and dependency analysis.
+
+The final v1.0.0 source compiles with the Java 17 release target and runs on Java 27. All 184 automated tests pass, including the prior regression suite, integrated workflow tests, and controlled corruption/recovery checks. A damaged derived ID index produces INDEX_MISMATCH; rebuilding it restores the current records and graph path. Two final experiments retain 240 verified measurement rows. The heap investigation supports linear bottom-up bulk construction over repeated insertion in difficult orderings, while the graph investigation shows why edge density and reachability matter alongside vertex count.
+
+The main accomplishment is integration around explicit ownership and policy. Immutable records live in one authoritative service; maps, trees, queues, heaps, and graph IDs refer to that state for distinct purposes. The software remains an in-memory, single-threaded demonstration, not a persistent interactive planner. The final report describes the current implementation only. Historical component diagnostics remain clearly labeled, and their different policies are not presented as the default release behavior.
+
+2 Problem scope and operational profile
+
+Intended users are students organizing coursework across courses and modules. The reviewer needs to reproduce the application and assess its design, correctness, and evidence. Assignment records contain positive unique IDs, parent course/module IDs, title, due date, priority 1–5, and PENDING, ACTIVE, or COMPLETE status. The highest numeric priority is most urgent. A prerequisite edge A → B means A must be completed before B can enter the strict workflow.
+
+Required scope follows the original proposal and numbered Milestone 2 requirements: validated records; a pending-count scan; ID/title search and course/status filters; deterministic due/priority/title views; eligible FIFO processing; academic hierarchy; priority/date/ID recommendation; and cycle-safe dependencies with blocker/traversal analysis. Optional CSV persistence, undo, and extended workload reporting remain deferred. No instructor feedback or approval of scope changes was supplied, so this report does not claim such approval.
+
+The interface is a reproducible console scenario plus a public Java facade, consistent with the earlier project interface assumption. It starts without source edits and demonstrates the integrated features, but it is not an interactive menu for entering personal tasks. All fixtures are fictional. Authentication, Canvas integration, collaboration, machine learning, production deployment, and confidential student data are outside scope.
+
+The qualitative workload is repeated lookup and display, with fewer record edits, prerequisite queries, and study-session starts. No measured user frequency distribution exists. Structure selection therefore rests on required operations and controlled synthetic experiments rather than a fabricated production workload. The expected project scale is modest; graph and bulk-heap experiments deliberately explore larger inputs and adverse shapes to expose limits.
+
+3 Requirements and traceability
+
+Table 1  Final requirements and verification
+
+ID | Required behavior | Implementation and structure | Evidence and status
+
+FR-01 | Valid unique assignments and parent references; course/module management | PlannerService, Assignment, Course, StudyModule; sequential registries, ID map | PlannerTest; courseModuleLifecycleGuardsReferences; updateSynchronizesViewsWithoutReordering. Complete. Nonempty parents cannot be deleted.
+
+FR-02 | Count PENDING entries and report examined count | PlannerService.countPending; sequential scan | Prior PlannerTest and releaseEndToEnd. Complete; exactly n status comparisons.
+
+FR-03 | Search ID/title, filter course/status, order due/priority/title | AssignmentSearch, PlannerQueries, AssignmentOrderings, ReleasePlanner; hash, binary search, stable merge sort | Milestone5Test, Milestone6Test, titleFilterAndSortAreCurrent. Complete. Title search is case-insensitive substring; title order is Java case-sensitive order plus ID.
+
+FR-04 | Eligible FIFO with no duplicate queued IDs | StudyWorkflow, LinkedQueue, ReleasePlanner; ID plus registration generation | StudyWorkflowTest; strictFifoEligibilityAndExternalChange; fifoRechecksNewPrerequisite; fifoIdReuseDoesNotStartReplacement. Complete. Stale/blocked queued entries are explicitly counted as discarded.
+
+FR-05 | Course/module/assignment hierarchy, including empty parents | ReleasePlanner.CourseBranch and ModuleBranch; detached nested hierarchy | hierarchyIncludesEmptyParentsExactlyOnce; updateSynchronizesViewsWithoutReordering. Complete; each stored assignment appears once.
+
+FR-05a | Auxiliary ID ranges and sorted ID traversal | AssignmentTree, BinarySearchTree; custom unbalanced BST | Milestone7Test and current view-synchronization tests. Complete with limitation: height can reach n−1.
+
+FR-06 | Recommend eligible pending task by priority, due date, then ID | ReleasePlanner.recommend/startRecommended; current candidate heap | recommendationsRespectEveryKeyAndBlockers; multiplePrerequisitesMustAllFinish; recommendationReflectsEditsWithoutStaleCandidate. Complete.
+
+FR-07 | Reject invalid prerequisite edges and analyze dependencies | ReleasePlanner and DependencyGraph; directed adjacency lists, BFS/DFS | Milestone9Test; strictCycleDuplicateMissingPreserveState; allAncestorsReported. Complete; cycles rejected through strict facade.
+
+QR-01/02/04 | Exact nonmutating pending count in linear time and constant auxiliary space | PlannerService.countPending | Retained count tests and code inspection. Complete for the integrated immutable-record scan.
+
+QR-03 | Java 17-compatible source and API target | verify.ps1; javac --release 17 | Successful final and fresh-copy compilation, 184 tests on Java 27. Actual Java 17 VM execution remains unverified.
+
+QR-05 | Fictional local data, no application credentials or restricted records | ReleaseDemo, fixtures, generated benchmark data | Source review and local execution. Complete; dependency setup alone may need network access.
+
+
+
+All functional entries in Table 1 are required; none is claimed removed by instructor approval. Assignment-to-file mapping uses src/main/java/edu/csc223/planner/<Class>.java and tests under src/test/java/edu/csc223/planner. The final test inventory in evidence/test-inventory.csv lists each executed test method and its owning class.
+
+4 Architecture and object oriented design
+
+Figure 1  Current component architecture
+
+StudentAssignmentPlanner → ReleaseDemo → ReleasePlanner
+
+ReleasePlanner → private PlannerService
+
+    PlannerService → SequentialStore → authoritative immutable records
+
+                   → AssignmentIndex → derived current ID map
+
+                   → AssignmentTree → derived ID order and ranges
+
+                   → DependencyGraph → authoritative prerequisite IDs
+
+ReleasePlanner → StudyWorkflow → LinkedQueue of ID plus generation
+
+ReleasePlanner → eligible snapshot → BinaryHeap → recommendation
+
+ReleasePlanner → CourseBranch → ModuleBranch → Assignment leaves
+
+Legacy diagnostic only: PlannerService → PrioritySchedule → BinaryHeap
+
+Tests → contracts, workflows, corruption and recovery
+
+benchmark/src → comparisons, counts, measurements
+
+Figure 1 distinguishes stored authority from temporary and derived data. PlannerService owns assignment and parent records. DependencyGraph owns relationship facts using stable IDs, avoiding duplicate mutable assignment objects. AssignmentIndex and AssignmentTree share current immutable records with the primary list and are updated through service methods. ReleasePlanner keeps that service private so callers cannot bypass strict dependency policy through the lower-level advisory graph API.
+
+Queues hold registration identity rather than authoritative payloads. A monotonic generation distinguishes a newly created assignment from an earlier deleted assignment with the same ID. Edits preserve generation; deletion and recreation change it. Strict recommendation builds a fresh heap from current eligible records, so no persistent recommendation cache can become stale. BFS queues, DFS stacks, sort buffers, parent-grouping maps, and hierarchy snapshots are temporary algorithmic state. Historical manual-priority mode retains immutable start-history snapshots and an enrollment heap; it is not a durable audit store.
+
+Domain records reject invalid fields at construction. Public snapshots are detached or unmodifiable, and immutable Assignment values can safely be shared. ReleasePlanner centralizes domain constraints; PlannerService centralizes storage synchronization; generic collections implement storage algorithms. The entry point selects a demonstration or diagnostic mode and handles expected input errors. Comparators separate ordering policy from heap and sorting mechanics. SearchTree and SimpleQueue define abstractions implemented by the custom tree and linked queue; no inheritance hierarchy was added simply to demonstrate inheritance.
+
+Cohesion is strongest at the immutable records and generic structures. The release facade is broader because it coordinates query, hierarchy, workflow, and dependency policy. This is acceptable at the current scope, but splitting query and workflow services would become useful if the API grows. The facade intentionally depends on the service rather than exposing individual mutable indexes. A maintained reverse-edge index would reduce incoming-neighbor scans but add synchronization obligations; it was not introduced without a measured requirement.
+
+5 Structures algorithms and contracts
+
+Table 2  Structure decisions
+
+Structure or algorithm | Purpose and decision | Cost and alternative
+
+SequentialStore | Retain authoritative insertion-order records and parent registries. | Simple scans and stable order; edits/removal can be linear. A hash-only repository would lose this direct insertion-order view.
+
+AssignmentIndex | Retain separate-chaining ID lookup and duplicate detection. | Expected constant lookup with suitable hashing, extra buckets/nodes. Collision-heavy worst cases remain linear.
+
+LinkedQueue | Retain FIFO study sessions; revise entries to include generation and injected eligibility. | Constant pointer enqueue/dequeue, but duplicate checking and eligibility inspection add scans.
+
+AssignmentTree | Limit to sorted ID traversal and inclusive ranges; do not confuse it with academic parentage. | Unbalanced height can be linear. A self-balancing tree is a future substitution if range workload warrants it.
+
+Course/module hierarchy | Retain explicit nested immutable result grouped by parent IDs. | Temporary O(c+m+n) grouping/output; regenerates after edits. It is the actual domain hierarchy required by FR-05.
+
+BinaryHeap | Retain priority selection; revise bulk build to bottom-up. | Fresh strict recommendation costs a scan; maintained ready state could speed repeated peeks but complicate updates.
+
+DependencyGraph | Retain adjacency lists and iterative BFS/DFS/cycle analysis; enforce DAG policy at release facade. | O(v+e) storage; incoming queries scan vertices. Matrix uses O(v²) cells and is less suitable for sparse prerequisites.
+
+Searching/sorting | Retain direct hash lookup, reusable ID-sorted binary views, and stable merge-sort reports. Limit insertion sort to comparison utilities. | Preparing a binary view includes copying/sorting. Insertion sort can be useful on nearly ordered small data but has quadratic worst-case shifts.
+
+
+
+Record lifecycle: IDs and status cannot be changed through general release edits. startRecommended or FIFO start transitions PENDING to ACTIVE. Completion accepts ACTIVE work or an eligible PENDING record; duplicate completion is rejected. Removing an assignment with outgoing constraints is prohibited until the user explicitly removes those constraints. Removing a leaf cleans its list/map/tree/graph registration. Courses and modules must be empty before removal. This avoids silent data loss and silently removing a prerequisite obligation.
+
+Strict graph insertion takes two existing IDs, requires a PENDING dependent, rejects self/duplicate edges, and searches from dependent to prerequisite before adding the edge. A found path would close a cycle, so rejection occurs before mutation. Removing or adding prerequisites of ACTIVE/COMPLETE tasks is prohibited. Direct eligibility checks PENDING status and completion of every immediate prerequisite. Blocker reporting walks incoming relationships to collect all unfinished ancestors; a single BFS path is not treated as the complete blocker set.
+
+FIFO enqueue validates eligibility and rejects duplicate waiting IDs. Inspection finds the first currently eligible matching generation without consuming it. Processing discards stale or newly blocked entries with an explicit count, starts the earliest eligible entry, updates authoritative status, and removes that queue entry. A discarded blocked assignment can be re-enqueued after it becomes eligible. Empty inspection and processing return defined empty results. A removed/recreated ID cannot revive an old queued registration.
+
+Recommendation first scans every assignment and outgoing edge of unfinished prerequisites to build a blocked-ID set. It filters current PENDING records not in that set, builds a heap bottom-up, and returns its root or Optional.empty. Ordering is higher priority, earlier due date, then lower ID. The legacy manual enrollment scheduler instead preserves arrival sequence before ID when other keys tie; that historical diagnostic policy is deliberately separate from FR-06.
+
+Merge sort accepts a detached array and comparator, recursively sorts halves, and selects the left record first on comparator equality to preserve stability. ID is the final report-view tie-breaker. Binary search accepts only an IdView prepared by copying and sorting on ID; callers cannot supply an incompatible order or mutate its internal array. A historical view does not automatically refresh after edits. Hash lookup is the normal current exact-ID operation.
+
+Graph BFS records discovery before enqueueing and uses a FIFO frontier, establishing minimum edge-count paths. Iterative DFS uses frames containing a vertex and an outgoing iterator, preserving the documented insertion-order depth-first traversal without recursive graph calls. Neither traversal establishes dependency readiness. Cycle auditing distinguishes active gray ancestors from completed black vertices, so shared downstream nodes do not incorrectly imply a cycle. Unknown vertices are rejected; known unreachable targets return an empty path.
+
+Invalid user input is rejected before logical mutation where documented; the tests compare state as well as exceptions. The final explicit rebuild constructs new map and tree indexes from authoritative immutable records, checks their size and tree invariant, then publishes both. This restores derived state without rebuilding relationship facts or changing FIFO generations. It is not a rollback transaction for arbitrary memory exhaustion, comparator failure, or concurrent writes. The application is single-threaded.
+
+6 Complexity analysis
+
+Let n be assignments, c courses, m modules, q queued/manual scheduled entries, h the ID-tree height, v graph vertices (normally n), e edges, k range output size, and vr/er the source-reachable graph region. String length and comparator work are treated as bounded for the fixture data. Hash-based expected bounds assume ordinary dispersion; they do not promise worst-case constant time. Space below is auxiliary per operation unless described as retained.
+
+Table 3  Implementation based complexity
+
+Operation | Expected or normal time | Worst case | Auxiliary space and explanation
+
+Current ID lookup | Expected O(1) | O(n) | O(1); one bucket-chain traversal.
+
+Add assignment | O(m+h) plus amortized list/map growth | O(m+n) | Amortized constant retained references plus tree/graph node; parent validation scans modules.
+
+Edit/status change | O(n+m+h+q) when manual schedule refresh applies | O(m+n+q) | O(q) replacement heap during manual refresh. Strict release usually has no manual enrollments.
+
+Remove assignment | O(n+v+out-degree+h+q) | O(n+v+e+q) | Incident cleanup and list shifting; strict facade first rejects outgoing constraints.
+
+Pending count | Θ(n) | Θ(n) | O(1), one status comparison per record.
+
+Title search/filter | O(n) plus optional course check O(c) | O(n+c) | O(n) result/snapshot; text length would add another factor if unbounded.
+
+Ordered view / ID-view preparation | Θ(n log n) | Θ(n log n) | O(n) copies and merge buffer; O(log n) recursion.
+
+Binary search already prepared view | O(log n) | O(log n) | O(1); one-shot service query also pays preparation.
+
+BST ID lookup / range | O(h) / O(h+k) | O(n) | Range recursion/output O(h+k); long skewed trees can exhaust recursive traversal stack.
+
+Academic hierarchy | Expected O(c+m+n) | Hash collision costs can increase grouping time | O(c+m+n) grouping and nested output; visits each record once.
+
+Direct prerequisites / eligibility | Expected O(v), plus parent checks | O(v+n·v) under pathological hash lookup | O(v) snapshot/output; no reverse adjacency index.
+
+All ancestor blockers | Expected O(v²+e) | Hash collision behavior may add cost | O(v) seen/frontier/output, with repeated temporary vertex snapshots.
+
+Strict recommendation | Expected O(n+e) | Hash collision costs may worsen blocked-set work | O(n) snapshots, blocked set, ready array, and heap.
+
+Bulk heap construction | Θ(q) | Θ(q) | O(q) copied heap; old and new heaps can coexist briefly.
+
+BFS or iterative DFS | Θ(v+er) with result vertex snapshot | O(v+e) under expected hashing | O(v); core walk Θ(vr+er), but complete vertex-set copy adds Θ(v).
+
+Cycle-safe edge request | Expected O(v+e) | O(v+e) traversal under expected hashing | O(v); reject before storing edge.
+
+Derived-index rebuild | O(sum of insertion depths) plus hash work | O(n²) for skewed rebuilt BST | O(n) new map/tree and snapshot. It does not balance the tree.
+
+Full release validation | O(n·h+n·m+v+e+q) under expected hashing | O(n²+n·m+e+q), ignoring collision escalation | O(n+v+e+q) temporary traversal/snapshot data; diagnostic rather than constant-time guard.
+
+
+
+Table 3 includes work hidden around the selected structure. An O(log n) binary-search loop does not make a copy-and-sort query logarithmic. A heap optimization does not remove list-position scans or unbalanced-tree work. FIFO core pointer operations are constant time, but duplicate checks inspect q waiting IDs and strict eligibility scans graph vertices. Retained project storage is O(c+m+n+e+q), plus any unbounded history in the optional legacy manual diagnostic. Array and hash capacities may remain larger after removals.
+
+7 Performance evidence and optimization
+
+Two final investigations were executed from v1.0.0 source. Heap data is in benchmark/raw/heap.csv (150 rows); graph data is in benchmark/raw/graph.csv (90 rows). Figures 2 and 3 are generated directly from those files. Final measurements replace the earlier release-candidate timing values; no report value is a projected or invented benchmark result.
+
+Heap question: should bulk schedule rebuild use repeated insertion or bottom-up construction? ReleaseBenchmark compares the preserved HeapBuildBaseline with the final BinaryHeap bulk constructor on sizes 16, 64, 256, 1,024, and 4,096. Each size uses comparator-ordered, reverse-ordered, and seeded-random entries (seed 22310 + size). Five warm-up pairs at 1,024 precede five measured trials per size/condition/version; execution order alternates. Both use the same counted scheduling comparator.
+
+Setup, generation, sorting/shuffling, console output, validation, and draining are outside the timed region. Each sample times one complete heap build with System.nanoTime. Comparison count is captured before correctness checks. Every result must satisfy the heap invariant and drain in the same sequence as an independently sorted copy. Windows and Java 27 HotSpot were used with -Xms128m -Xmx512m. There was no CPU isolation, allocation profiler, or production workload; short samples and JIT/GC activity can produce large timing variation.
+
+Table 4  Reverse order heap comparison; timing is median [min–max] microseconds
+
+Entries | Old comparisons | New comparisons | Old time µs | New time µs
+
+16 | 38 | 24 | 2.1 [2.0–2.8] | 2.4 [2.2–3.5]
+
+64 | 264 | 116 | 7.5 [7.1–7.6] | 5.6 [5.6–5.8]
+
+256 | 1546 | 496 | 23.0 [21.9–36.8] | 20.2 [19.1–38.3]
+
+1024 | 8204 | 2028 | 114.3 [107.4–122.7] | 82.1 [77.8–83.4]
+
+4096 | 40974 | 8168 | 545.9 [426.0–553.8] | 161.0 [123.2–314.2]
+
+
+
+
+
+Figure 2 shows the difficult ordering where repeated insertion repeatedly moves a new entry toward the root. At 4,096 entries, comparisons decrease from 40,974 to 8,168 (about 80.1% fewer), and median measured time decreases from 545.9 to 161.0 microseconds. The sum of node heights explains the linear bottom-up bound; the measurements support that mechanism at the tested sizes.
+
+The improvement is not universal. Comparator-ordered input uses 4,095 comparisons in both versions at 4,096 entries, and measured medians favor repeated insertion (201.9 versus 287.2 microseconds). At 1,024 random entries, bottom-up timing also exceeds insertion despite fewer comparisons. Retain the small bulk-build change for its predictable worst-case bound and unchanged semantics, while accepting O(q) temporary replacement space. The experiment measures bulk construction, not complete end-to-end update latency.
+
+Graph question: how do density and reachability affect traversal work? GraphExperiment builds sizes 32, 64, 128, 256, and 512. Sparse graphs contain a forward chain plus skip-one edges, e=2v−3; dense DAGs contain every lower-ID to higher-ID edge, e=v(v−1)/2; split graphs contain two disconnected chains, e=v−2. BFS and DFS start at ID 1. Three repetitions per shape/size/algorithm count outgoing edges examined and peak frontier items. Generation and printing are outside those counts; no elapsed-time claim is made.
+
+Table 5  Graph counts at 512 vertices
+
+Shape | All edges | Reached | Examined | BFS peak | DFS peak
+
+sparse | 1021 | 512 | 1021 | 2 | 512
+
+dense | 130816 | 512 | 130816 | 511 | 512
+
+split | 510 | 256 | 255 | 1 | 256
+
+
+
+
+
+Figure 3 combines BFS and DFS lines because both examine the same outgoing edges in the reachable region. At 512 vertices the dense graph examines 130,816 edges versus 1,021 for sparse and 255 for split. Split traversal reaches only 256 vertices. Equal edge counts do not imply equal runtime: at this size sparse BFS peaks at two queue entries while DFS retains 512 frames. These are item counts, not byte measurements. The immutable result also copies all vertex IDs, explaining the v term even for a small reachable component.
+
+Earlier milestones compared sequential/binary lookup, sorting, hashing, tree shape, and manual priority processing. Their behavioral tests remain in the final suite and their implementation lessons inform Tables 2 and 3. The two current investigations provide the final empirical figures rather than mixing historical measurements with a changed release. Next performance work should measure representative mixed operations, complete prerequisite completion and recommendation sequences, memory use, and percentiles on the target machine.
+
+8 Testing validation and quality
+
+The final suite reports 184 tests found, 184 started, 184 successful, zero skipped, zero aborted, and zero failed. The 178 prior tests remain, with the release-version assertion updated from v1.0.0-rc1 to v1.0.0. Six additional final tests cover controlled index corruption/repair, queue-generation preservation through repair, multiple prerequisites, duplicate-operation state preservation, current recommendation after edits, and clear/delete/reuse safety. FinalValidationEvidence is a test-only executable, not another test or a production corruption endpoint.
+
+Table 6  Representative risks and tests
+
+Risk | Representative verification
+
+Invalid records, duplicates, missing references | PlannerTest, Milestone6Test, duplicateFailurePreservesCompleteVisibleState; compare records, queue IDs, hierarchy, and valid state after rejection.
+
+Queue order and stale registration | LinkedQueueTest, StudyWorkflowTest, fifoIdReuseDoesNotStartReplacement, clearAndReuseCannotReviveFifoEntry; recreated IDs stay pending instead of being started by old entries.
+
+Search/sort correctness and ties | Milestone5Test; titleFilterAndSortAreCurrent; recommendationsRespectEveryKeyAndBlockers; independent expected sequences and immutable snapshots.
+
+Tree/heap behavior and optimization | Milestone7Test, Milestone8Test, heapAllDistributionsAgainstIndependentSort, bulkComparisonBound; complete drain comparison and comparison bound.
+
+Dependency integrity and readiness | Milestone9Test, strictCycleDuplicateMissingPreserveState, allAncestorsReported, multiplePrerequisitesMustAllFinish; valid paths, unreachable behavior, all-parent readiness, before/after rejection checks.
+
+Integrated workflow | releaseEndToEnd creates and queries records, queues work, completes prerequisites, starts recommendations, removes a leaf, and validates final state.
+
+Validator can detect real damage | validatorDetectsCorruptionAndRebuildRestores removes ID 2 from the private hash index through test reflection; invalid state is detected, rebuilt, and validated without changing authoritative records or graph path.
+
+
+
+Final controlled validation evidence
+
+Version=v1.0.0
+
+Before=Integrity[valid=true, issues=[]]
+
+After controlled hash removal=Integrity[valid=false, issues=[INDEX_MISMATCH]]
+
+After rebuild=Integrity[valid=true, issues=[]]
+
+Restored ID 2=Implement planner
+
+Preserved path=[1, 2, 3]
+
+Recommendation=4
+
+The controlled defect is meaningful: the authoritative record still exists while its derived lookup entry is missing. The invalid report is therefore a cross-structure check rather than an injected Boolean failure. Reconstruction prepares both map and tree before publishing. The test checks object identity, record-array equality, path preservation, recommendation, and final validity. Test reflection is confined to src/test and no public corruption method is exposed.
+
+Table 7  Resolved defects and scope gaps
+
+Issue | Cause and correction | Verification/status
+
+Queued ID reuse could start a new record | IDs alone did not identify registrations; add generation tokens preserved by edits. | FIFO reuse and clear/reuse regression tests; resolved.
+
+Earlier advisory graph did not fulfill strict prerequisite requirements | Release facade enforces cycles, lifecycle, and eligibility while keeping old diagnostics separate. | Cycle/state, blocked FIFO, and all-parent tests; resolved for default release.
+
+Hierarchy and title/filter scope gaps | ID BST was not an academic hierarchy; add nested parent grouping and current queries. | Hierarchy exact-once and search/filter tests; resolved.
+
+Repeated insertion bulk rebuild | Avoidable worst-case comparisons; add bottom-up constructor and replace schedule rebuild. | Full regression suite, reference-sort comparison, final experiment; retained with caveats.
+
+Derived-index recovery lacked final audit evidence | Add prepare-and-publish map/tree rebuild and test against real index damage. | INDEX_MISMATCH before repair, valid after repair; resolved.
+
+
+
+Security and quality review found no credentials, private keys, or restricted student records in the final project. The application performs no network requests and no user-controlled file import. Records validate required fields, returned views protect internal state, and expected CLI input errors produce messages and exit code 2. Benchmark utilities write only to documented output locations supplied by the evaluator. The build script checks process exits; its optional dependency download verifies an exact SHA-256 digest. JUnit is test-only. No claim is made about untested concurrency, resource exhaustion, persistence recovery, or student technical mastery.
+
+9 Final release and reproducibility
+
+Final source version: v1.0.0. Release branch: final-release-v1.0.0. Commit: 0a07d3063b8b2bba31b644620d6afb820cfb9c95. Prepared November 22, 2026. Repository: https://github.com/elgun-dev/csc-223-coursework. Project directory: assignments/project-milestone-1-student-planner. The final branch preserves the existing history and contains the current integrated project. The repository repair brings main forward to this release. The commit above identifies the tested source; subsequent documentation-only changes do not alter that source. Instructor access to this private repository is not established by access through the connected account.
+
+The source layout contains 46 Java files: 28 production/domain/demo files under src/main, seven intentionally retained comparison utilities under benchmark/src, and 11 files under src/test (ten test classes plus the validation executable). The test inventory and source hashes are in evidence. There are no compiled classes, IDE caches, or independent obsolete milestone copies in the submitted project folder. Historical diagnostic modes are part of one current source version and documented in --help.
+
+README.md defines JDK requirements, build/run/test commands, benchmark commands, folder layout, fixture behavior, and limitations. verify.ps1 compiles production, test, and benchmark sources; runs the complete suite; runs validation evidence; prints the version; and executes the integrated scenario. It uses project-relative paths and accepts an optional JDK bin path. Source generation is not required to run the submitted project.
+
+Build and verify from the project folder
+
+powershell -NoProfile -ExecutionPolicy Bypass -File .\verify.ps1
+
+
+
+Run the integrated demonstration
+
+java -cp build/classes edu.csc223.planner.StudentAssignmentPlanner
+
+
+
+Run performance investigations after compilation
+
+java -Xms128m -Xmx512m -cp build/classes edu.csc223.planner.ReleaseBenchmark
+
+java -cp build/classes edu.csc223.planner.GraphExperiment benchmark/raw/new-graph
+
+A fresh copy is verified using only the submitted project files and documented script. The copied project starts without pre-existing class files. The retained clean verification transcript records compilation success, all tests, controlled repair, version identification, and the main scenario. Separate smoke runs check help, historical modes, unknown mode, and malformed graph input. Java 17 compatibility is a compiler target; the tested runtime is Java 27, so the report does not imply a Java 17 VM run.
+
+Development evidence is cumulative source, tests, reports, and current repository history. The remote inspected at the start contained only the early starter; later milestones were developed locally. This final integration does not fabricate intermediate Git commits or backdate development. An accessible final branch cannot repair missing progressive remote history, and that limitation remains disclosed. Canvas upload verification and instructor-specific access checks must be performed in the submission context.
+
+10 Evaluation limitations and future work
+
+The planner now satisfies the original functional scope through one default strict workflow and a reusable API. State consistency, prerequisite policy, and current views have targeted evidence. The highest-impact architectural decision is keeping immutable authoritative records separate from derived views and enforcing release policy through one facade. The design makes scheduling requirements explicit rather than assuming that a valid heap or graph automatically gives valid domain behavior.
+
+Table 8  Limitations workarounds and review triggers
+
+Limitation and impact | Workaround and reason retained | Future action
+
+No persistence or interactive editor | Run the deterministic console scenario or use the API; the project focuses on algorithms and integration. | Add validated storage and an interactive interface only with recovery and usability tests.
+
+Unbalanced ID tree and recursive range/traversal methods | Use hash lookup for current IDs; moderate classroom inputs. | Consider a balanced tree if height exceeds twice ceil(log2(n+1)) or range latency is material; stress deep-tree stack behavior.
+
+Incoming edge scans and fresh recommendation snapshots | Simple ownership and no stale recommendation cache. | Profile representative queries; consider reverse adjacency if p95 blocker latency exceeds 10 ms over 1,000 requests.
+
+Limited synthetic performance evidence | Report comparisons and measured distributions, not universal speed guarantees. | Measure complete mixed workflows, allocations, GC, and multiple machines/seeds before deployment claims.
+
+Single-threaded recovery boundary | Validated requests preserve logical state; explicit derived rebuild repairs known index damage. | Design synchronization, transactional persistence, and broader failure injection before concurrent/critical use.
+
+Private repository access and incomplete remote chronology | Current release is identifiable; local evidence remains traceable. | Verify instructor permissions and follow required final upload/version procedures; do not invent missing history.
+
+
+
+11 Technical learning and conclusion
+
+The project demonstrates that choosing a data structure creates an integration obligation. A map improves exact lookup only if every mutation keeps it synchronized. An ID tree supports ranges but does not satisfy a course hierarchy requirement. A heap enforces its comparator but does not decide whether unfinished prerequisites permit a task to start. Those distinctions drove the release facade, immutable snapshots, generation checks, and independent invariant validation.
+
+The optimization illustrates the difference between theory and empirical evidence. Bottom-up construction reduces worst-case bulk work, yet favorable small inputs can run more slowly. Retaining it is justified by a narrow predictable bound and modest complexity, not by claiming universal speed. The graph investigation similarly shows why input size needs more than one dimension: identical vertex counts can have very different edge work and frontier storage.
+
+A future project should establish acceptance tests, authoritative ownership, and failure guarantees earlier, then measure the actual operational mix before adding maintained indexes. The final release is locally tested, reproducible from its project files, and supported by current evidence. It remains subject to the stated runtime, access, interface, and workload limits rather than an unsupported claim of production readiness.
+
+12 References and evidence index
+
+Assignment sources: the supplied CSC 223 Final Project Report and Software Submission instructions, Course Completion Overview, Final Project Readiness Review, and Final Project Requirements and Submission Package. Project sources: the supplied original proposal and Milestones 1–10, used to audit continuity and scope. No external performance claims or copied benchmark numbers are used.
+
+Table 9  Evidence locations
+
+Artifact | Purpose
+
+README.md; VERSION; verify.ps1 | Exact local setup, version, compile/test/run procedure.
+
+src/main; src/test; benchmark/src | Current implementation, complete suite, and reproducible comparison utilities.
+
+docs/final-report.txt; docs/release-notes.txt | Current design narrative and release changes.
+
+evidence/tests.txt; test-inventory.csv | Final test summary and named test inventory.
+
+evidence/demo.txt; validation.txt; clean-verification.txt | Integrated run, controlled corruption/repair, and fresh-copy evidence.
+
+evidence/source-sha256.json; audit.txt | Exact source hashes and packaging checks.
+
+benchmark/raw/heap.csv; graph.csv | All 150 heap and 90 graph measurement rows.
+
+benchmark/figures/heap.png; graph.png | Figures 2 and 3, derived from final measurement files.
+
+
+
+Appendix A Final execution evidence
+
+Student Assignment Planner v1.0.0
+
+Insertion order=[1, 2, 3, 4]
+
+Title search planner=[2, 3]
+
+Title order=[1, 2, 4, 3]
+
+Hash ID 2=Implement planner; binary ID 2=2
+
+BST range 2..3=[2, 3]
+
+Course 223
+
+  Module 10 assignments=[1, 2, 3, 4]
+
+  Module 11 assignments=[]
+
+Course 208
+
+BFS=[1, 2, 3]; DFS=[1, 2, 3]; path=[1, 2, 3]
+
+Blockers of 3=[2, 1]; isolated path=[]
+
+Rejected cycle: Self, duplicate, or cycle-forming dependency
+
+Rejected blocked FIFO: Only pending assignments may enter
+
+Recommended=4
+
+FIFO starts=1
+
+Unblocked recommendation=2
+
+Priority starts=2
+
+Next priority starts=3
+
+FIFO starts=4
+
+Empty recommendation=Optional.empty; empty FIFO=StartResult[started=Optional.empty, discarded=0]
+
+Removed 3; pending=ScanResult[pendingCount=0, examinedCount=3]; validation=Integrity[valid=true, issues=[]]
+
+Final automated test summary
+
+Test run finished after 194 ms
+
+[       184 tests found           ]
+
+[         0 tests skipped         ]
+
+[       184 tests started         ]
+
+[         0 tests aborted         ]
+
+[       184 tests successful      ]
+
+[         0 tests failed          ]
