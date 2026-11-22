@@ -45,7 +45,7 @@ Layout:
   benchmark/src/edu/csc223/planner comparison-only utility sources
   benchmark/raw                  final measurement CSV files
   benchmark/figures              charts matching the report
-  docs                           release notes (technical report upload pending)
+  docs                           final technical report and release notes
   evidence                       tests, validation, demo, audit, source manifest
   lib                            JUnit standalone test dependency
   VERSION, verify.ps1             release marker and clean build/run procedure
@@ -69,4 +69,4 @@ software. Main is being brought forward to the same release. Earlier milestones 
 does not fabricate missing progressive remote commits. Instructor access to the
 private repository remains unverified.
 
-The final technical report submitted through Canvas contains the requirements traceability, architecture, design decisions, complexity analysis, testing discussion, and limitations. Its upload to this repository is pending; do not assume these are separate files already present under docs.
+The final technical report submitted through Canvas contains the requirements traceability, architecture, design decisions, complexity analysis, testing discussion, and limitations. Read it in [docs/final-report.txt](docs/final-report.txt): section 3 covers traceability, section 4 architecture, sections 5–7 decisions and performance, section 8 tests and defects, and section 10 limitations.
